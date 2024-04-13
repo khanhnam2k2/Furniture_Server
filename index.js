@@ -9,6 +9,7 @@ const port = 3000;
 const categoryRoute = require("./routes/category");
 const productRoute = require("./routes/product");
 const authRoute = require("./routes/auth");
+const cartRoute = require("./routes/cart");
 
 dotenv.config();
 app.use(cors());
@@ -25,6 +26,7 @@ app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use("/api/category", categoryRoute);
 app.use("/api/product", productRoute);
 app.use("/api/", authRoute);
+app.use("/api/cart", cartRoute);
 
 app.listen(process.env.PORT || port, () => {
   console.log(`Máy chủ đang lắng nghe qua HTTP trên http://localhost:${port}`);

@@ -7,6 +7,7 @@ const ProductSchema = new mongoose.Schema(
     rating: { type: String, required: true },
     quantity: { type: Number, required: true },
     price: { type: String, required: true },
+    size: { type: String, default: "small" },
     category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
     description: { type: String },
     favoriteCount: { type: Number, default: 0 },
