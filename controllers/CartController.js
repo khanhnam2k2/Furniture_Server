@@ -95,10 +95,7 @@ module.exports = {
       itemToUpdate.quantity = quantity;
 
       // Cập nhật lại tổng số lượng sản phẩm trong giỏ hàng
-      cart.totalQuantity = cart.items.reduce(
-        (total, item) => total + item.quantity,
-        0
-      );
+      cart.totalQuantity = cart?.items?.length;
 
       // Cập nhật lại tổng giá tiền trong giỏ hàng
       cart.totalPrice = cart.items.reduce(
