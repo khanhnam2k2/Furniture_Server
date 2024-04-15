@@ -19,8 +19,7 @@ module.exports = {
   // Hàm thêm sp vào giỏ hàng
   addToCart: async (req, res) => {
     try {
-      const { userId, productId, quantity, size, price } = req.body;
-      const product = await Product.findById(productId);
+      const { userId, productId, quantity, price } = req.body;
       // Tìm giỏ hàng của người dùng
       let cart = await Cart.findOne({ user: userId });
       // Nếu không tìm thấy giỏ hàng, thì tạo mới
@@ -30,7 +29,7 @@ module.exports = {
 
       //   Kiểm tra xem sp đã tồn tại trong giỏ hàng hay chưa
       const existingItem = cart.items.find(
-        (item) => item.product.toString() === productId && item.size === size
+        (item) => item.product.toString() === productId
       );
 
       // Nếu sp đã tồn tại trong giỏ hàng thì cập nhật số lượng
@@ -38,7 +37,7 @@ module.exports = {
         existingItem.quantity += quantity;
       } else {
         // Nếu chưa tồn tại trong giỏ hàng thì thêm vào giỏ hàng
-        cart.items.push({ product: productId, quantity, size, price });
+        cart.items.push({ product: productId, quantity, price });
       }
       cart.totalQuantity = cart?.items?.length;
       cart.totalPrice += quantity * parseFloat(price);
@@ -111,22 +110,38 @@ module.exports = {
         message: "Số lượng sản phẩm đã được cập nhật trong giỏ hàng",
       });
     } catch (error) {
-      console.error(error);
-      res
-        .status(500)
-        .json({ success: false, message: "Một số thứ đã xảy ra sai sót" });
+      res.status(500).json("Một số thứ đã xảy ra sai sót");
     }
   },
   // Hàm xóa sp trong giỏ hàng
   deleteCartItem: async (req, res) => {
     try {
       const { userId, itemId } = req.params;
-      const cart = await Cart.findOne({ user: userId });
+
+      const cart = await Cart.findOneAndUpdate(
+        { user: userId },
+        {
+          $pull: { items: { _id: itemId } },
+          $inc: { totalQuantity: -1 },
+        },
+        { new: true }
+      );
+
       if (!cart) {
         return res.status(404).json({ message: "Không tìm thấy giỏ hàng" });
       }
 
-      cart.items = cart.items.filter((item) => item._id.toString() !== itemId);
+      const deletedItem = cart.items.find(
+        (item) => item._id.toString() === itemId
+      );
+
+      if (!deletedItem) {
+        return res.json({ message: "Không tìm thấy sản phẩm trong giỏ hàng" });
+      }
+
+      const deletedPrice = deletedItem.price * deletedItem.quantity;
+      cart.totalPrice -= deletedPrice;
+
       await cart.save();
 
       res.status(200).json({ message: "Sản phẩm đã được xóa khỏi giỏ hàng" });
