@@ -10,6 +10,8 @@ const categoryRoute = require("./routes/category");
 const productRoute = require("./routes/product");
 const authRoute = require("./routes/auth");
 const cartRoute = require("./routes/cart");
+const orderRoute = require("./routes/order");
+const userRotue = require("./routes/user");
 
 dotenv.config();
 app.use(cors());
@@ -27,6 +29,8 @@ app.use("/api/category", categoryRoute);
 app.use("/api/product", productRoute);
 app.use("/api/", authRoute);
 app.use("/api/cart", cartRoute);
+app.use("/api/order", orderRoute);
+app.use("/api/user", userRotue);
 
 app.listen(process.env.PORT || port, () => {
   console.log(`Máy chủ đang lắng nghe qua HTTP trên http://localhost:${port}`);
