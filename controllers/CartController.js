@@ -40,7 +40,6 @@ module.exports = {
         cart.items.push({ product: productId, quantity, price });
       }
       cart.totalQuantity = cart?.items?.length;
-      cart.totalPrice += quantity * parseFloat(price);
       await cart.save();
       return res
         .status(200)
@@ -96,12 +95,6 @@ module.exports = {
       // Cập nhật lại tổng số lượng sản phẩm trong giỏ hàng
       cart.totalQuantity = cart?.items?.length;
 
-      // Cập nhật lại tổng giá tiền trong giỏ hàng
-      cart.totalPrice = cart.items.reduce(
-        (total, item) => total + item.quantity * parseFloat(item.price),
-        0
-      );
-
       // Lưu lại giỏ hàng sau khi cập nhật
       await cart.save();
 
@@ -138,9 +131,6 @@ module.exports = {
       if (!deletedItem) {
         return res.json({ message: "Không tìm thấy sản phẩm trong giỏ hàng" });
       }
-
-      const deletedPrice = deletedItem.price * deletedItem.quantity;
-      cart.totalPrice -= deletedPrice;
 
       await cart.save();
 
