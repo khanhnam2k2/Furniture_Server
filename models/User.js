@@ -9,6 +9,7 @@ const UserSchema = new mongoose.Schema(
       { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
     ],
     avatar: { type: String },
+    role: { type: Number, default: 1 },
   },
   { timestamps: true }
 );
