@@ -3,7 +3,7 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const app = express();
 const cors = require("cors");
-const port = 3000;
+const port = 3001;
 
 // Routes
 const categoryRoute = require("./routes/category");
@@ -15,6 +15,7 @@ const userRotue = require("./routes/user");
 
 dotenv.config();
 app.use(cors());
+app.use(express.static("public"));
 
 // Kết nối mongoose
 mongoose

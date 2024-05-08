@@ -12,7 +12,9 @@ const ProductSchema = new mongoose.Schema(
     category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
     description: { type: String },
     favoriteCount: { type: Number, default: 0 },
-    favoriteBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    favoriteBy: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false },
+    ],
     bestsellers: { type: Boolean, default: false },
   },
   { timestamps: true }
