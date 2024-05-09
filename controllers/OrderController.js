@@ -64,10 +64,11 @@ module.exports = {
       res.status(500).json("Một số thứ đã xảy ra sai sót");
     }
   },
-  getOrderListByStatus: async (req, res) => {
+  getOrderUserListByStatus: async (req, res) => {
     try {
       const { status } = req.query;
-      const orders = await Order.find({ status: status })
+      const userId = req.params.userId;
+      const orders = await Order.find({ user: userId, status: status })
         .populate("items.product")
         .sort({ createdAt: -1 })
         .exec();
