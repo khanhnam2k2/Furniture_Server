@@ -77,4 +77,35 @@ module.exports = {
       res.status(500).json("Một số thứ đã xảy ra sai sót");
     }
   },
+  getAllOrders: async (req, res) => {
+    try {
+      let query = {};
+      if (!req.query.page) {
+        const orders = await Order.find()
+          .populate("items.product")
+          .populate("user")
+          .sort({ createdAt: -1 })
+          .exec();
+        return res.status(200).json(orders);
+      }
+      // Tìm tất cả các đơn hàng
+
+      const page = req.query.page || 1;
+      const limit = req.query.limit || 1;
+      const startIndex = (page - 1) * limit;
+
+      const orders = await Order.find(query)
+        .populate("items.product")
+        .populate("user")
+        .limit(limit)
+        .skip(startIndex);
+
+      const totalOrders = await Order.countDocuments(query);
+      const totalPages = Math.ceil(totalOrders / limit);
+
+      res.status(200).json({ orders, totalPages });
+    } catch (error) {
+      res.status(500).json("Đã xảy ra lỗi khi lấy danh sách đơn hàng");
+    }
+  },
 };

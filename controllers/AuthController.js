@@ -39,9 +39,13 @@ module.exports = {
           error: "Thông tin xác thực sai. Vui lòng cung cấp mật khẩu hợp lệ.",
         });
       }
-      const userToken = jwt.sign({ id: user._id }, process.env.JWT_SEC, {
-        expiresIn: "7d",
-      });
+      const userToken = jwt.sign(
+        { id: user._id, role: user.role },
+        process.env.JWT_SEC,
+        {
+          expiresIn: "7d",
+        }
+      );
       const { password, __v, createdAt, updatedAt, ...userData } = user._doc;
       res.status(200).json({ ...userData, token: userToken });
     } catch (error) {
