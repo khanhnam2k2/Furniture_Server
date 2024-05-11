@@ -15,7 +15,7 @@ const ProductSchema = new mongoose.Schema(
     favoriteBy: [
       { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false },
     ],
-    bestsellers: { type: Boolean, default: false },
+    bestsellers: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

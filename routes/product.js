@@ -22,5 +22,6 @@ router.post(
   upload.array("images", 10),
   ProductController.createProduct
 );
+router.delete("/:id", checkRoleAdmin(), ProductController.deleteProduct);
 
 module.exports = router;

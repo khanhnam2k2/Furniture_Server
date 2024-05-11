@@ -91,12 +91,13 @@ module.exports = {
       // Tìm tất cả các đơn hàng
 
       const page = req.query.page || 1;
-      const limit = req.query.limit || 1;
+      const limit = req.query.limit || 3;
       const startIndex = (page - 1) * limit;
 
       const orders = await Order.find(query)
         .populate("items.product")
         .populate("user")
+        .sort({ createdAt: -1 })
         .limit(limit)
         .skip(startIndex);
 
@@ -106,6 +107,32 @@ module.exports = {
       res.status(200).json({ orders, totalPages });
     } catch (error) {
       res.status(500).json("Đã xảy ra lỗi khi lấy danh sách đơn hàng");
+    }
+  },
+  updateStatus: async (req, res) => {
+    try {
+      const { orderId } = req.params; // Lấy id của đơn hàng từ params
+      const { status } = req.body; // Lấy trạng thái mới từ body của yêu cầu
+
+      // Tìm đơn hàng trong cơ sở dữ liệu và cập nhật trạng thái
+      const updatedOrder = await Order.findByIdAndUpdate(
+        orderId,
+        { status: status },
+        { new: true } // Trả về đối tượng đơn hàng đã được cập nhật
+      );
+
+      if (!updatedOrder) {
+        // Nếu không tìm thấy đơn hàng, trả về lỗi 404 - Not Found
+        return res.status(404).json({ message: "Đơn hàng không tồn tại" });
+      }
+
+      // Trả về đơn hàng đã được cập nhật
+      res.status(200).json({ message: "Cập nhật thành công" });
+    } catch (error) {
+      // Nếu có lỗi xảy ra trong quá trình xử lý, trả về lỗi 500 - Internal Server Error
+      res
+        .status(500)
+        .json({ message: "Đã xảy ra lỗi khi cập nhật trạng thái đơn hàng" });
     }
   },
 };
