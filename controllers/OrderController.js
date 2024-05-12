@@ -77,6 +77,31 @@ module.exports = {
       res.status(500).json("Một số thứ đã xảy ra sai sót");
     }
   },
+  getTotalOrderByStatus: async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      // Đếm số lượng đơn hàng theo trạng thái cho userId cụ thể
+      const totalPending = await Order.countDocuments({
+        user: userId,
+        status: 0,
+      });
+      const totalDelivering = await Order.countDocuments({
+        user: userId,
+        status: 1,
+      });
+      const totalComplete = await Order.countDocuments({
+        user: userId,
+        status: 2,
+      });
+      res.status(200).json({
+        pending: totalPending,
+        delivering: totalDelivering,
+        complete: totalComplete,
+      });
+    } catch (error) {
+      res.status(500).json("Một số thứ đã xảy ra sai sót");
+    }
+  },
   getAllOrders: async (req, res) => {
     try {
       let query = {};
