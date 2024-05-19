@@ -10,7 +10,9 @@ module.exports = {
       }
 
       if (!req.query.page) {
-        const products = await Product.find(query).populate("category");
+        const products = await Product.find(query)
+          .populate("category")
+          .sort({ createdAt: -1 });
         return res.status(200).json(products);
       }
 
@@ -21,7 +23,8 @@ module.exports = {
       const products = await Product.find(query)
         .populate("category")
         .limit(limit)
-        .skip(startIndex);
+        .skip(startIndex)
+        .sort({ createdAt: -1 });
 
       const totalProducts = await Product.countDocuments(query);
       const totalPages = Math.ceil(totalProducts / limit);
