@@ -24,6 +24,7 @@ module.exports = {
 
       // Lưu đơn hàng vào cơ sở dữ liệu
       await newOrder.save();
+
       const itemIds = items.map((item) => item._id);
       // Xóa các sản phẩm đã đặt khỏi giỏ hàng của người dùng
 

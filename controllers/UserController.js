@@ -10,7 +10,6 @@ module.exports = {
         return res.json({ error: "Không tìm thấy người dùng" });
       }
 
-      // Cập nhật thông tin hồ sơ nếu được cung cấp
       if (username) {
         user.username = username;
       }
