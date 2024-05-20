@@ -3,6 +3,7 @@ const Product = require("../models/Product");
 const Cart = require("../models/Cart");
 
 module.exports = {
+  // Hàm đặt hàng cho người dùng
   createOrder: async (req, res) => {
     try {
       const { userId, items, address, phone, type } = req.body;
@@ -65,6 +66,7 @@ module.exports = {
       res.status(500).json("Một số thứ đã xảy ra sai sót");
     }
   },
+  // Hàm lấy thông tin đơn hàng của người dùng theo status
   getOrderUserListByStatus: async (req, res) => {
     try {
       const { status } = req.query;
@@ -78,6 +80,7 @@ module.exports = {
       res.status(500).json("Một số thứ đã xảy ra sai sót");
     }
   },
+  // Hàm lấy thông đơn hàng cho người dùng
   getTotalOrderByStatus: async (req, res) => {
     try {
       const userId = req.params.userId;
@@ -103,6 +106,7 @@ module.exports = {
       res.status(500).json("Một số thứ đã xảy ra sai sót");
     }
   },
+  // Lấy tất cả đơn hàng
   getAllOrders: async (req, res) => {
     try {
       let query = {};
@@ -135,6 +139,7 @@ module.exports = {
       res.status(500).json("Đã xảy ra lỗi khi lấy danh sách đơn hàng");
     }
   },
+  // Hàm cập nhật trạng thái đơn hàng
   updateStatus: async (req, res) => {
     try {
       const { orderId } = req.params; // Lấy id của đơn hàng từ params

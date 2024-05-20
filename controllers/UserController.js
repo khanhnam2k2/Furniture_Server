@@ -1,6 +1,7 @@
 const User = require("../models/User");
 
 module.exports = {
+  // Hàm cập nhật profile user
   updateUserProfile: async (req, res) => {
     const userId = req.params.id;
     const { username, avatar } = req.body;

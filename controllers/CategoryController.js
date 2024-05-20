@@ -1,6 +1,7 @@
 const Category = require("../models/Category");
 
 module.exports = {
+  // Hàm lấy danh sách danh mục sp
   getCategoryList: async (req, res) => {
     try {
       let query = {};
@@ -24,6 +25,7 @@ module.exports = {
       res.status(500).json("Một số thứ đã xảy ra sai sót");
     }
   },
+  // Hàm tạo mới danh mục
   createCategory: async (req, res) => {
     const { name, description, icon } = req.body;
     try {
@@ -40,6 +42,7 @@ module.exports = {
       res.status(500).json("Một số thứ đã xảy ra sai sót");
     }
   },
+  // Hàm xóa danh mục
   deleteCategory: async (req, res) => {
     const categoryId = req.params.id;
     try {

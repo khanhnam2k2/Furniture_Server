@@ -2,6 +2,7 @@ const Product = require("../models/Product");
 const fs = require("fs");
 const path = require("path");
 module.exports = {
+  // Hàm lấy danh sách sp
   getProductList: async (req, res) => {
     try {
       let query = {};
@@ -34,7 +35,7 @@ module.exports = {
       res.status(500).json("Một số thứ đã xảy ra sai sót");
     }
   },
-
+  // Hàm lấy ds sp theo danh mục
   getProductByCategory: async (req, res) => {
     try {
       const categoryId = req.params.categoryId;
@@ -48,6 +49,7 @@ module.exports = {
       res.status(500).json("Một số thứ đã xảy ra sai sót");
     }
   },
+  // Hàm tìm kiếm sp
   searchProduct: async (req, res) => {
     try {
       const productName = req.query.name;
@@ -58,6 +60,7 @@ module.exports = {
       res.status(500).json("Một số thứ đã xảy ra sai sót");
     }
   },
+  // Hàm tạo mới sản phẩm
   createProduct: async (req, res) => {
     try {
       const {
@@ -95,6 +98,7 @@ module.exports = {
       res.status(500).json("Một số thứ đã xảy ra sai sót");
     }
   },
+  // Hàm xóa sản phẩm
   deleteProduct: async (req, res) => {
     try {
       const productId = req.params.id;
