@@ -25,7 +25,7 @@ module.exports = {
     try {
       const user = await User.findOne({ email: req.body.email });
       if (!user) {
-        return res.json({
+        return res.status(404).json({
           error: "Thông tin xác thực sai. Vui lòng cung cấp một email hợp lệ.",
         });
       }
@@ -35,7 +35,7 @@ module.exports = {
       );
       const decryptedConvert = decryptedPassword.toString(CryptoJs.enc.Utf8);
       if (!decryptedPassword || decryptedConvert !== req.body.password) {
-        return res.json({
+        return res.status(401).json({
           error: "Thông tin xác thực sai. Vui lòng cung cấp mật khẩu hợp lệ.",
         });
       }

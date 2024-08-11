@@ -6,20 +6,26 @@ module.exports = {
   getProductList: async (req, res) => {
     try {
       let query = {};
+      const page = req.query.page || 1;
+      const limit = req.query.limit || 4;
+      const startIndex = (page - 1) * limit;
+
       if (req.query.bestsellers) {
         query = { bestsellers: true };
       }
-
+      if (req.query.newArrivals) {
+        const newArrivals = await Product.find()
+          .populate("category")
+          .sort({ createdAt: -1 })
+          .limit(limit); // Lấy 4 sản phẩm mới nhất
+        return res.status(200).json(newArrivals);
+      }
       if (!req.query.page) {
         const products = await Product.find(query)
           .populate("category")
           .sort({ createdAt: -1 });
         return res.status(200).json(products);
       }
-
-      const page = req.query.page || 1;
-      const limit = req.query.limit || 2;
-      const startIndex = (page - 1) * limit;
 
       const products = await Product.find(query)
         .populate("category")
@@ -49,6 +55,17 @@ module.exports = {
       res.status(500).json("Một số thứ đã xảy ra sai sót");
     }
   },
+  // Hàm lấy ds sp theo danh mục
+  getProductById: async (req, res) => {
+    try {
+      const productId = req.params.id;
+
+      const products = await Product.findById(productId).populate("category");
+      res.status(200).json(products);
+    } catch (error) {
+      res.status(500).json("Một số thứ đã xảy ra sai sót");
+    }
+  },
   // Hàm tìm kiếm sp
   searchProduct: async (req, res) => {
     try {
@@ -62,44 +79,97 @@ module.exports = {
   },
   // Hàm tạo mới sản phẩm
   createProduct: async (req, res) => {
-    try {
-      const {
-        name,
-        rating,
-        quantity,
-        price,
-        materials,
-        size,
-        category,
-        description,
-        bestsellers,
-      } = req.body;
-      let imagesUrl = [];
-      req?.files?.forEach((file) => imagesUrl.push(file.filename)); // Lấy đường dẫn của các hình ảnh đã tải lên
-      // Tạo một sản phẩm mới
-      const newProduct = new Product({
-        name,
-        imagesUrl,
-        rating,
-        quantity,
-        price,
-        materials,
-        size,
-        category,
-        description,
-        bestsellers,
+    const { name, price, priceSale, options, category, description } = req.body;
+    let imagesUrl = [];
+
+    if (req.files && Array.isArray(req.files)) {
+      req.files.forEach((file) => imagesUrl.push(file.filename));
+    } else if (req.files) {
+      imagesUrl.push(req.files.filename);
+    }
+
+    let parsedOptions = [];
+    let quantityAll = 0;
+    if (options) {
+      parsedOptions = JSON.parse(options);
+      parsedOptions.forEach((option) => {
+        const quantityPared = parseInt(option.quantity);
+        quantityAll += quantityPared; // Tính tổng quantity từ các option
       });
+    }
+    // Tạo một sản phẩm mới
 
-      // Lưu sản phẩm vào cơ sở dữ liệu
-      const savedProduct = await newProduct.save();
+    const newProduct = new Product({
+      name,
+      imagesUrl,
+      quantityAll,
+      price,
+      priceSale,
+      category,
+      description,
+      options: parsedOptions, // Gán sizes đã được phân tích
+    });
 
-      res.status(201).json(savedProduct); // Trả về sản phẩm đã tạo thành công
+    // Lưu sản phẩm vào cơ sở dữ liệu
+    const savedProduct = await newProduct.save();
+
+    res.status(201).json(savedProduct); // Trả về sản phẩm đã tạo thành công
+  },
+  editProduct: async (req, res) => {
+    const { productId } = req.params;
+    const { name, price, priceSale, options, category, description } = req.body;
+    let imagesUrl = [];
+    console.log(productId);
+
+    try {
+      // Tìm sản phẩm theo ID
+      const product = await Product.findById(productId);
+      if (!product) {
+        return res.status(404).json({ error: "Product not found" });
+      }
+
+      // Cập nhật thông tin cơ bản
+      product.name = name || product.name;
+      product.price = price || product.price;
+      product.priceSale = priceSale || product.priceSale;
+      product.category = category || product.category;
+      product.description = description || product.description;
+
+      // Xử lý hình ảnh
+      if (req.files && Array.isArray(req.files)) {
+        req.files.forEach((file) => imagesUrl.push(file.filename));
+      } else if (req.files) {
+        imagesUrl.push(req.files.filename);
+      }
+      product.imagesUrl = imagesUrl.length > 0 ? imagesUrl : product.imagesUrl;
+
+      // Xử lý các tùy chọn (options)
+      let parsedOptions = [];
+      let quantityAll = 0;
+      if (options) {
+        parsedOptions = JSON.parse(options);
+        parsedOptions.forEach((option) => {
+          const quantityPared = parseInt(option.quantity);
+          quantityAll += quantityPared;
+        });
+      }
+      product.options =
+        parsedOptions.length > 0 ? parsedOptions : product.options;
+      product.quantityAll = quantityAll || product.quantityAll;
+
+      // Lưu cập nhật vào cơ sở dữ liệu
+      const updatedProduct = await product.save();
+
+      res.status(200).json(updatedProduct);
     } catch (error) {
-      res.status(500).json("Một số thứ đã xảy ra sai sót");
+      console.error("Error updating product:", error);
+      res.status(500).json({ error: "Server error" });
     }
   },
   // Hàm xóa sản phẩm
   deleteProduct: async (req, res) => {
+    console.log(2);
+
     try {
       const productId = req.params.id;
       // Tìm sản phẩm để lấy tên hình ảnh

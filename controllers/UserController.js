@@ -1,6 +1,15 @@
 const User = require("../models/User");
 
 module.exports = {
+  getCurrentUser: async (req, res) => {
+    try {
+      const user = await User.findById(req.userId);
+      const { password, __v, createdAt, updatedAt, ...userData } = user._doc;
+      res.json({ user: userData });
+    } catch (error) {
+      res.status(500).json("Một số thứ đã xảy ra sai sót");
+    }
+  },
   // Hàm cập nhật profile user
   updateUserProfile: async (req, res) => {
     const userId = req.params.id;
