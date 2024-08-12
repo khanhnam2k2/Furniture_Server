@@ -7,7 +7,7 @@ module.exports = {
       const { password, __v, createdAt, updatedAt, ...userData } = user._doc;
       res.json({ user: userData });
     } catch (error) {
-      res.status(500).json("Một số thứ đã xảy ra sai sót");
+      res.status(500).json("Some thing went wrong");
     }
   },
   // Hàm cập nhật profile user
@@ -33,7 +33,7 @@ module.exports = {
 
       res.status(200).json("Hồ sơ được cập nhật thành công");
     } catch (error) {
-      res.status(500).json("Một số thứ đã xảy ra sai sót");
+      res.status(500).json("Some thing went wrong");
     }
   },
 };

@@ -63,7 +63,7 @@ module.exports = {
 
       res.status(201).json({ success: true, message: "Đặt hàng thành công" });
     } catch (error) {
-      res.status(500).json("Một số thứ đã xảy ra sai sót");
+      res.status(500).json("Some thing went wrong");
     }
   },
   // Hàm lấy thông tin đơn hàng của người dùng theo status
@@ -77,7 +77,7 @@ module.exports = {
         .exec();
       res.status(200).json(orders);
     } catch (error) {
-      res.status(500).json("Một số thứ đã xảy ra sai sót");
+      res.status(500).json("Some thing went wrong");
     }
   },
   // Hàm lấy thông đơn hàng cho người dùng
@@ -103,7 +103,7 @@ module.exports = {
         complete: totalComplete,
       });
     } catch (error) {
-      res.status(500).json("Một số thứ đã xảy ra sai sót");
+      res.status(500).json("Some thing went wrong");
     }
   },
   // Lấy tất cả đơn hàng

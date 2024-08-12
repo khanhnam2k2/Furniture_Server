@@ -13,7 +13,7 @@ module.exports = {
       }
       res.status(200).json(cart);
     } catch (error) {
-      res.status(500).json("Một số thứ đã xảy ra sai sót");
+      res.status(500).json("Some thing went wrong");
     }
   },
   // Hàm thêm sp vào giỏ hàng
@@ -45,7 +45,7 @@ module.exports = {
         .status(200)
         .json({ success: true, message: "Sản phẩm đã được thêm vào giỏ hàng" });
     } catch (error) {
-      res.status(500).json("Một số thứ đã xảy ra sai sót");
+      res.status(500).json("Some thing went wrong");
     }
   },
   // Hàm cập nhật sl sp trong giỏ hàng
@@ -103,7 +103,7 @@ module.exports = {
         message: "Số lượng sản phẩm đã được cập nhật trong giỏ hàng",
       });
     } catch (error) {
-      res.status(500).json("Một số thứ đã xảy ra sai sót");
+      res.status(500).json("Some thing went wrong");
     }
   },
   // Hàm xóa sp trong giỏ hàng
@@ -136,7 +136,7 @@ module.exports = {
 
       res.status(200).json({ message: "Sản phẩm đã được xóa khỏi giỏ hàng" });
     } catch (error) {
-      res.status(500).json("Một số thứ đã xảy ra sai sót");
+      res.status(500).json("Some thing went wrong");
     }
   },
 };

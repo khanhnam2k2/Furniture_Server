@@ -22,7 +22,6 @@ function checkAuth() {
 
 function checkRoleAdmin() {
   return async (req, res, next) => {
-    console.log(22);
     const token = req.headers.authorization;
 
     if (!token) {

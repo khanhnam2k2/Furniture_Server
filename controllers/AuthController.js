@@ -17,7 +17,7 @@ module.exports = {
       await newUser.save();
       res.status(201).json({ message: "Người dùng đã được tạo thành công" });
     } catch (error) {
-      res.status(500).json("Một số thứ đã xảy ra sai sót");
+      res.status(500).json("Some thing went wrong");
     }
   },
   //   Hàm đăng nhập
@@ -49,7 +49,7 @@ module.exports = {
       const { password, __v, createdAt, updatedAt, ...userData } = user._doc;
       res.status(200).json({ ...userData, token: userToken });
     } catch (error) {
-      res.status(500).json("Một số thứ đã xảy ra sai sót");
+      res.status(500).json("Some thing went wrong");
     }
   },
 };
