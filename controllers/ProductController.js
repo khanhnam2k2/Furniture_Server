@@ -2,16 +2,37 @@ const Product = require("../models/Product");
 const fs = require("fs");
 const path = require("path");
 const Variant = require("../models/Variant");
+const Category = require("../models/Category");
 module.exports = {
   // Hàm lấy danh sách sp
   getProductList: async (req, res) => {
     try {
-      let { category, bestsellers, page = 1, limit = 4 } = req.query;
+      let {
+        category,
+        bestsellers,
+        page = 1,
+        limit = 4,
+        price,
+        search,
+      } = req.query;
       let query = {};
       const startIndex = (page - 1) * limit;
       const sortOptions = { createdAt: -1 };
       if (bestsellers) {
         query.bestsellers = true;
+      }
+      if (search) {
+        // Tìm kiếm theo tên sản phẩm
+        query.$or = [
+          { name: { $regex: search, $options: "i" } },
+          {
+            category: {
+              $in: await Category.find({
+                name: { $regex: search, $options: "i" },
+              }).distinct("_id"),
+            },
+          },
+        ];
       }
       if (category) {
         query.category = category;
@@ -20,7 +41,6 @@ module.exports = {
         // Sắp xếp theo ngày tạo gần nhất
         limit = 1;
       }
-      const price = null;
       if (price) {
         const [minPrice, maxPrice] = price.split("-").map(Number);
         query.$or = [
