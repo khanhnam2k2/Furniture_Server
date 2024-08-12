@@ -6,22 +6,53 @@ module.exports = {
   // Hàm lấy danh sách sp
   getProductList: async (req, res) => {
     try {
+      let { category, bestsellers, page = 1, limit = 4 } = req.query;
       let query = {};
-      const page = req.query.page || 1;
-      const limit = req.query.limit || 4;
       const startIndex = (page - 1) * limit;
-
-      if (req.query.bestsellers) {
+      const sortOptions = { createdAt: -1 };
+      if (bestsellers) {
         query.bestsellers = true;
       }
-      if (req.query.newArrivals) {
-        const newArrivals = await Product.find()
-          .populate("category")
-          .sort({ createdAt: -1 })
-          .limit(limit); // Lấy 4 sản phẩm mới nhất
-        return res.status(200).json(newArrivals);
+      if (category) {
+        query.category = category;
       }
-      if (!req.query.page) {
+      if (req.query.newArrivals) {
+        // Sắp xếp theo ngày tạo gần nhất
+        limit = 1;
+      }
+      const price = null;
+      if (price) {
+        const [minPrice, maxPrice] = price.split("-").map(Number);
+        query.$or = [
+          {
+            $expr: {
+              $and: [
+                {
+                  $or: [
+                    {
+                      $and: [
+                        { $ne: ["$priceSale", ""] }, // Nếu có giá khuyến mãi
+                        { $gte: [{ $toDouble: "$priceSale" }, minPrice] },
+                        { $lte: [{ $toDouble: "$priceSale" }, maxPrice] },
+                      ],
+                    },
+                    {
+                      $and: [
+                        { $eq: ["$priceSale", ""] }, // Nếu không có giá khuyến mãi
+                        { $ne: ["$price", null] }, // Giá chính không phải null
+                        { $ne: ["$price", ""] }, // Giá chính không phải chuỗi rỗng
+                        { $gte: [{ $toDouble: "$price" }, minPrice] },
+                        { $lte: [{ $toDouble: "$price" }, maxPrice] },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        ];
+      }
+      if (!page) {
         const products = await Product.find(query)
           .populate("category")
           .populate("variants")
@@ -34,7 +65,7 @@ module.exports = {
         .populate("variants")
         .limit(limit)
         .skip(startIndex)
-        .sort({ createdAt: -1 });
+        .sort(sortOptions);
 
       const totalProducts = await Product.countDocuments(query);
       const totalPages = Math.ceil(totalProducts / limit);
@@ -122,7 +153,7 @@ module.exports = {
     const { productId } = req.params;
     const { name, price, priceSale, variants, category, description } =
       req.body;
-    console.log(req.body);
+    console.log(req.body.priceSale);
 
     try {
       // Tìm sản phẩm bằng ID
@@ -142,7 +173,7 @@ module.exports = {
       // Cập nhật thông tin sản phẩm
       product.name = name || product.name;
       product.price = price || product.price;
-      product.priceSale = priceSale || product.priceSale;
+      product.priceSale = priceSale;
       product.category = category || product.category;
       product.description = description || product.description;
       product.imagesUrl = imagesUrl.length > 0 ? imagesUrl : product.imagesUrl;
