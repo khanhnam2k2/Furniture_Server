@@ -4,6 +4,23 @@ const path = require("path");
 const Variant = require("../models/Variant");
 const Category = require("../models/Category");
 module.exports = {
+  suggestProduct: async (req, res) => {
+    try {
+      const search = req.query.search || "";
+
+      // Tìm kiếm sản phẩm dựa trên `search`
+      const suggestions = await Product.find({
+        name: { $regex: search, $options: "i" },
+      })
+        .select("name") // Chỉ lấy trường "name"
+        .limit(5); // Giới hạn số lượng gợi ý, ví dụ là 5
+
+      res.status(200).json(suggestions);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Lỗi khi lấy gợi ý sản phẩm" });
+    }
+  },
   // Hàm lấy danh sách sp
   getProductList: async (req, res) => {
     try {
@@ -43,10 +60,10 @@ module.exports = {
       }
       if (price) {
         const [minPrice, maxPrice] = price.split("-").map(Number);
-        query.$or = [
+        query.$and = [
           {
             $expr: {
-              $and: [
+              $or: [
                 {
                   $or: [
                     {
